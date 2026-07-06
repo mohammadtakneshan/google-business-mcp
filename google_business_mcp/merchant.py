@@ -20,7 +20,7 @@ def list_products(account: str, page_size: int = 100, page_token: str | None = N
     params: dict[str, Any] = {"pageSize": page_size}
     if page_token:
         params["pageToken"] = page_token
-    return request_json("GET", f"{BASE}/products/v1/{account}/products", params=params)
+    return request_json("GET", f"{BASE}/products/v1/{quote(account, safe='/')}/products", params=params)
 
 
 def get_product(product_name: str) -> dict[str, Any]:
@@ -31,7 +31,7 @@ def list_product_statuses(account: str, page_size: int = 100, page_token: str | 
     params: dict[str, Any] = {"pageSize": page_size}
     if page_token:
         params["pageToken"] = page_token
-    return request_json("GET", f"{BASE}/issueresolution/v1/{account}/aggregateProductStatuses", params=params)
+    return request_json("GET", f"{BASE}/issueresolution/v1/{quote(account, safe='/')}/aggregateProductStatuses", params=params)
 
 
 def list_product_issues(account: str, language_code: str = "en-US", page_size: int = 100, page_token: str | None = None) -> dict[str, Any]:
@@ -54,4 +54,4 @@ def query_reports(account: str, query: str, page_size: int = 100, page_token: st
     body: dict[str, Any] = {"query": query, "pageSize": page_size}
     if page_token:
         body["pageToken"] = page_token
-    return request_json("POST", f"{BASE}/reports/v1/{account}/reports:search", json=body)
+    return request_json("POST", f"{BASE}/reports/v1/{quote(account, safe='/')}/reports:search", json=body)

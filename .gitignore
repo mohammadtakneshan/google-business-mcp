@@ -31,7 +31,6 @@ site-packages/
 # Security-sensitive local configuration and credentials
 .env
 .env.*
-!.env.example
 *.env
 *.env.*
 !.env.example
