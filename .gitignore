@@ -1,0 +1,81 @@
+# OS/editor noise
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+
+# Python caches and local virtual environments
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+venv/
+env/
+.python-version
+
+# Installable/downloadable package caches and build outputs
+.cache/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.npm-cache/
+.npx/
+node_modules/
+build/
+dist/
+*.egg-info/
+*.whl
+pip-wheel-metadata/
+site-packages/
+
+# Security-sensitive local configuration and credentials
+.env
+.env.*
+!.env.example
+*.env
+*.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+*.pfx
+*.crt
+*.cer
+*.csr
+*.jks
+*.keystore
+client_secret*.json
+credentials*.json
+oauth*.json
+service-account*.json
+*secret*
+*secrets*
+*credential*
+*credentials*
+*token*
+*tokens*
+
+# Local Codex, MCP, plugin, and agent-skill state
+.codex/
+.agents/
+.mcp.json
+mcp.json
+*.mcp.json
+codex-*.json
+codex-*.toml
+.codex-plugin/
+.codex-plugin-*
+plugin.lock.json
+
+# Temporary installable/plugin download material
+.tmp/
+tmp/
+temp/
+*.tmp
+*.temp
+*.bak
+*.backup
+*.orig
+
+# Logs
+*.log
