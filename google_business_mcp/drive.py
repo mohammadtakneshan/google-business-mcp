@@ -88,14 +88,23 @@ def read_file_content(file_id: str, mime_type: str | None = None, max_bytes: int
         params = {"alt": "media"}
         export_mime_type = source_mime_type
 
-    response = requests.get(url, headers=auth_headers(), params=params, timeout=60)
-    if response.status_code >= 400:
-        raise RuntimeError(f"{response.status_code} {response.reason}: {response.text[:1000]}")
+    with requests.get(url, headers=auth_headers(), params=params, timeout=60, stream=True) as response:
+        if response.status_code >= 400:
+            raise RuntimeError(f"{response.status_code} {response.reason}: {response.text[:1000]}")
 
-    content = response.content[:max_bytes]
-    truncated = len(response.content) > max_bytes
+        # Read at most max_bytes + 1 chunk so truncation can be detected without
+        # buffering the entire (potentially huge) file in memory.
+        buffer = bytearray()
+        for chunk in response.iter_content(chunk_size=8192):
+            buffer.extend(chunk)
+            if len(buffer) > max_bytes:
+                break
+        encoding = response.encoding
+
+    truncated = len(buffer) > max_bytes
+    content = bytes(buffer[:max_bytes])
     try:
-        text = content.decode(response.encoding or "utf-8")
+        text = content.decode(encoding or "utf-8")
         return {
             "metadata": metadata,
             "mimeType": export_mime_type,
