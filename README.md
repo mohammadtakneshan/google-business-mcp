@@ -16,7 +16,6 @@ disabled unless they are needed later.
    - Gmail API
    - Google Calendar API
    - People API
-   - Google Chat API
 3. Create `~/.codex/secrets/google/google-business-mcp.env` from `.env.example`.
 4. Run the OAuth helper:
 
