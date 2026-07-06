@@ -31,6 +31,7 @@ DEFAULT_SCOPES = " ".join(
         "https://www.googleapis.com/auth/directory.readonly",
         "https://www.googleapis.com/auth/userinfo.profile",
         "https://www.googleapis.com/auth/contacts.readonly",
+        "https://www.googleapis.com/auth/analytics.readonly",
     ]
 )
 

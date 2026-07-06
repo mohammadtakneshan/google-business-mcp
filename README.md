@@ -1,6 +1,6 @@
 # Google Business MCP
 
-Read-only MCP server for Google Merchant Center, Google Search Console, Google Drive, and selected Google Workspace surfaces.
+Read-only MCP server for Google Merchant Center, Google Search Console, Google Drive, Google Analytics (GA4), and selected Google Workspace surfaces.
 
 Use `google_business` as the only enabled day-to-day Google business MCP in
 Codex. Separate docs MCPs and the Google Ads MCP can stay configured but
@@ -16,6 +16,8 @@ disabled unless they are needed later.
    - Gmail API
    - Google Calendar API
    - People API
+   - Google Analytics Admin API
+   - Google Analytics Data API
 3. Create `~/.codex/secrets/google/google-business-mcp.env` from `.env.example`.
 4. Run the OAuth helper:
 
@@ -29,6 +31,10 @@ Merchant API currently requires the `https://www.googleapis.com/auth/content`
 OAuth scope. The MCP only exposes read-only tools, but Google does not provide a
 separate Merchant API read-only OAuth scope.
 
+Analytics tools use the read-only `https://www.googleapis.com/auth/analytics.readonly`
+scope and require both the Google Analytics Admin API and the Google Analytics
+Data API to be enabled in the project.
+
 ## Local account labels
 
 Optional local labels can be set in your private env file. Keep real account
@@ -37,6 +43,7 @@ IDs, project numbers, login hints, and token paths out of git.
 - `GOOGLE_BUSINESS_MERCHANT_ACCOUNT`
 - `GOOGLE_BUSINESS_MERCHANT_DISPLAY_NAME`
 - `GOOGLE_BUSINESS_SEARCH_CONSOLE_SITE`
+- `GOOGLE_ANALYTICS_PROPERTY_ID`
 - `GOOGLE_CLOUD_PROJECT_NUMBER`
 
 ## Merchant notes
@@ -85,6 +92,12 @@ LIMIT 5
 - `people.get_user_profile`
 - `people.search_contacts`
 - `people.search_directory`
+- `analytics.list_account_summaries`
+- `analytics.list_properties`
+- `analytics.get_property`
+- `analytics.get_metadata`
+- `analytics.run_report`
+- `analytics.run_realtime_report`
 
 ## Google Workspace MCP note
 

@@ -5,7 +5,7 @@ from typing import Any
 
 from mcp.server.fastmcp import FastMCP
 
-from . import drive, merchant, search_console, workspace
+from . import analytics, drive, merchant, search_console, workspace
 
 
 mcp = FastMCP("google-business")
@@ -24,6 +24,7 @@ def google_help_overview() -> dict[str, Any]:
                 "displayName": os.environ.get("GOOGLE_BUSINESS_MERCHANT_DISPLAY_NAME", "Your merchant account"),
             },
             "searchConsole": {"siteUrl": os.environ.get("GOOGLE_BUSINESS_SEARCH_CONSOLE_SITE", "https://example.com/")},
+            "analytics": {"propertyId": os.environ.get("GOOGLE_ANALYTICS_PROPERTY_ID", "properties/YOUR_PROPERTY_ID")},
             "googleCloudProjectNumber": os.environ.get("GOOGLE_CLOUD_PROJECT_NUMBER", "YOUR_PROJECT_NUMBER"),
         },
         "liveTools": {
@@ -61,13 +62,22 @@ def google_help_overview() -> dict[str, Any]:
                 "people.search_contacts",
                 "people.search_directory",
             ],
+            "analytics": [
+                "analytics.list_account_summaries",
+                "analytics.list_properties",
+                "analytics.get_property",
+                "analytics.get_metadata",
+                "analytics.run_report",
+                "analytics.run_realtime_report",
+            ],
         },
         "authNotes": [
             "OAuth credentials are loaded from GOOGLE_BUSINESS_MCP_ENV.",
             "Merchant API requires the broad https://www.googleapis.com/auth/content scope, but this MCP exposes read-only tools only.",
             "Drive tools use https://www.googleapis.com/auth/drive.readonly.",
+            "Analytics tools use https://www.googleapis.com/auth/analytics.readonly and require the Google Analytics Admin API and Data API to be enabled.",
             "Workspace tools are intentionally read-only and are separate from Claude.ai Google connectors.",
-            "Google Ads is intentionally not exposed here yet.",
+            "Google Ads and Google Business Profile are not exposed yet; they require a developer token and API allowlisting respectively.",
         ],
     }
 
@@ -82,6 +92,8 @@ def google_docs_links() -> dict[str, Any]:
         "searchConsoleApi": "https://developers.google.com/webmaster-tools/v1/api_reference_index",
         "urlInspectionApi": "https://developers.google.com/webmaster-tools/v1/urlInspection.index/inspect",
         "driveApi": "https://developers.google.com/drive/api/reference/rest/v3",
+        "analyticsDataApi": "https://developers.google.com/analytics/devguides/reporting/data/v1/rest",
+        "analyticsAdminApi": "https://developers.google.com/analytics/devguides/config/admin/v1/rest",
         "googleWorkspaceMcp": "https://developers.google.com/workspace/guides/configure-mcp-servers",
         "gmailApi": "https://developers.google.com/gmail/api/reference/rest",
         "calendarApi": "https://developers.google.com/workspace/calendar/api/v3/reference",
@@ -292,6 +304,71 @@ def people_search_contacts(query: str, page_size: int = 10) -> dict[str, Any]:
 def people_search_directory(query: str, page_size: int = 10) -> dict[str, Any]:
     """Search Google Workspace directory people. Read-only."""
     return workspace.people_search_directory(query=query, page_size=page_size)
+
+
+@mcp.tool(name="analytics.list_account_summaries")
+def analytics_list_account_summaries(page_size: int = 200, page_token: str | None = None) -> dict[str, Any]:
+    """List GA4 account summaries (accounts and their properties). Read-only."""
+    return analytics.list_account_summaries(page_size=page_size, page_token=page_token)
+
+
+@mcp.tool(name="analytics.list_properties")
+def analytics_list_properties(filter: str, page_size: int = 200, page_token: str | None = None) -> dict[str, Any]:
+    """List GA4 properties matching a filter such as parent:accounts/123. Read-only."""
+    return analytics.list_properties(filter=filter, page_size=page_size, page_token=page_token)
+
+
+@mcp.tool(name="analytics.get_property")
+def analytics_get_property(property_id: str) -> dict[str, Any]:
+    """Get one GA4 property by id or resource name (properties/123). Read-only."""
+    return analytics.get_property(property_id=property_id)
+
+
+@mcp.tool(name="analytics.get_metadata")
+def analytics_get_metadata(property_id: str) -> dict[str, Any]:
+    """Get available GA4 dimensions and metrics for a property. Read-only."""
+    return analytics.get_metadata(property_id=property_id)
+
+
+@mcp.tool(name="analytics.run_report")
+def analytics_run_report(
+    property_id: str,
+    metrics: list[str],
+    start_date: str,
+    end_date: str,
+    dimensions: list[str] | None = None,
+    limit: int | None = None,
+    offset: int | None = None,
+) -> dict[str, Any]:
+    """Run a GA4 Data API report for a property. Read-only.
+
+    Dates accept YYYY-MM-DD or relative values like 7daysAgo/today.
+    """
+    return analytics.run_report(
+        property_id=property_id,
+        metrics=metrics,
+        start_date=start_date,
+        end_date=end_date,
+        dimensions=dimensions,
+        limit=limit,
+        offset=offset,
+    )
+
+
+@mcp.tool(name="analytics.run_realtime_report")
+def analytics_run_realtime_report(
+    property_id: str,
+    metrics: list[str],
+    dimensions: list[str] | None = None,
+    limit: int | None = None,
+) -> dict[str, Any]:
+    """Run a GA4 Data API realtime report for a property. Read-only."""
+    return analytics.run_realtime_report(
+        property_id=property_id,
+        metrics=metrics,
+        dimensions=dimensions,
+        limit=limit,
+    )
 
 
 def main() -> None:
